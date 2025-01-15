@@ -1,0 +1,90 @@
+{
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "preLaunchTask": "build ciphers_main",
+      "name": "Debug Ciphers Main",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "ASAN_OPTIONS": "abort_on_error=1:detect_leaks=0",
+      },
+      "program": "${workspaceFolder}/ciphers_main",
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "preLaunchTask": "build ciphers_tests",
+      "name": "Debug Caesar Enc Tests",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "ASAN_OPTIONS": "abort_on_error=1:detect_leaks=0",
+      },
+      "program": "${workspaceFolder}/ciphers_tests",
+      "args": [
+        "--gtest_color=yes",
+        "--gtest_filter=CaesarEnc_*",
+      ],
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "preLaunchTask": "build ciphers_tests",
+      "name": "Debug Caesar Dec Tests",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "ASAN_OPTIONS": "abort_on_error=1:detect_leaks=0",
+      },
+      "program": "${workspaceFolder}/ciphers_tests",
+      "args": [
+        "--gtest_color=yes",
+        "--gtest_filter=CaesarDec_*",
+      ],
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "preLaunchTask": "build ciphers_tests",
+      "name": "Debug Subst Enc Tests",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "ASAN_OPTIONS": "abort_on_error=1:detect_leaks=0",
+      },
+      "program": "${workspaceFolder}/ciphers_tests",
+      "args": [
+        "--gtest_color=yes",
+        "--gtest_filter=SubstEnc_*",
+      ],
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "preLaunchTask": "build ciphers_tests",
+      "name": "Debug Subst Dec Tests",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "ASAN_OPTIONS": "abort_on_error=1:detect_leaks=0",
+      },
+      "program": "${workspaceFolder}/ciphers_tests",
+      "args": [
+        "--gtest_color=yes",
+        "--gtest_filter=SubstDec_*",
+      ],
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "preLaunchTask": "build ciphers_tests",
+      "name": "Debug Subst Dec File Tests",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "ASAN_OPTIONS": "abort_on_error=1:detect_leaks=0",
+      },
+      "program": "${workspaceFolder}/ciphers_tests",
+      "args": [
+        "--gtest_color=yes",
+        "--gtest_filter=SubstDecFile_*",
+      ],
+    },
+  ],
+}

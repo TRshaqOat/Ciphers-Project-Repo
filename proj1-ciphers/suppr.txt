@@ -1,0 +1,5 @@
+# Known leaks on newer Macs
+leak:_fetchInitializingClassList
+leak:libobjc.A.dylib
+leak:libsystem_malloc.dylib
+leak:gtest-printers.h
