@@ -84,6 +84,9 @@ void printMenu() {
 
 char rot(char c, int amount) {
   // TODO: student
+  int index = ALPHABET.find(c);
+  index += amount;
+  
   return 'A';
 }
 
