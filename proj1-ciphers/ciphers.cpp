@@ -84,8 +84,9 @@ void printMenu() {
 
 char rot(char c, int amount) {
   // TODO: student
-  
-  return ALPHABET.at(ALPHABET.find(c) + amount);
+  int index = ALPHABET.find(c);
+  index = (index + amount) % 26;
+  return ALPHABET.at(index);
 }
 
 string rot(const string& line, int amount) {
