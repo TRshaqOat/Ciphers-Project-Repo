@@ -91,7 +91,16 @@ char rot(char c, int amount) {
 
 string rot(const string& line, int amount) {
   // TODO: student
-  return "";
+  string temp;
+  for (char c : line) {
+    if(isalpha(c)) {
+      char upper = toupper(c);
+      temp += rot(upper, amount);
+    } else {
+      temp += c;
+    }
+  }
+  return temp;
 }
 
 void caesarEncryptCommand() {
