@@ -54,8 +54,19 @@ int main() {
               "generator: ";
       getline(cin, seed_str);
       Random::seed(stoi(seed_str));
-    }
-
+    } else if (command == "C" || command == "c") {
+      caesarEncryptCommand();
+    } else if (command == "D" || command == "d") {
+      
+    } else if (command == "E" || command == "e") {
+      
+    } else if (command == "A" || command == "a") {
+      
+    } else if (command == "S" || command == "s") {
+      
+    } else if (command == "F" || command == "f") {
+      
+    } 
     cout << endl;
 
   } while (!(command == "x" || command == "X") && !cin.eof());
@@ -96,7 +107,7 @@ string rot(const string& line, int amount) {
     if(isalpha(c)) {
       char upper = toupper(c);
       temp += rot(upper, amount);
-    } else {
+    } else if(isspace(c)) {
       temp += c;
     }
   }
@@ -105,6 +116,13 @@ string rot(const string& line, int amount) {
 
 void caesarEncryptCommand() {
   // TODO: student
+  string normalText;
+  string amount;
+  cout << "Enter text for encryption: ";
+  getline(cin, normalText);
+  cout << "Enter an integer for shift encryption: ";
+  getline(cin, amount);
+  cout << endl << "Encrypted text: " << rot(normalText, stoi(amount)) << endl;
 }
 
 #pragma endregion CaesarEnc
