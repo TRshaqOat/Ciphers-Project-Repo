@@ -35,6 +35,21 @@ int main() {
   Random::seed(time(NULL));
   string command;
 
+  ifstream file("dictionary.txt");
+  vector<string> dictionary;
+  string wordRead;
+
+  if (file.is_open()) {
+      while (file >> wordRead) {
+          dictionary.push_back(wordRead);
+      }
+      file.close();
+      cout << "*dictionary read successfully*";
+  } else {
+      cout << "Error opening file!" << endl;
+      return 1;
+  }
+
   cout << "Welcome to Ciphers!" << endl;
   cout << "-------------------" << endl;
   cout << endl;
@@ -57,7 +72,7 @@ int main() {
     } else if (command == "C" || command == "c") {
       caesarEncryptCommand();
     } else if (command == "D" || command == "d") {
-      
+      caesarDecryptCommand(dictionary);
     } else if (command == "E" || command == "e") {
       
     } else if (command == "A" || command == "a") {
@@ -131,6 +146,7 @@ void caesarEncryptCommand() {
 
 void rot(vector<string>& strings, int amount) {
   // TODO: student
+
 }
 
 string clean(const string& s) {
@@ -155,6 +171,20 @@ int numWordsIn(const vector<string>& words, const vector<string>& dict) {
 
 void caesarDecryptCommand(const vector<string>& dict) {
   // TODO: student
+  vector<string> words;
+  string tempWord;
+  while(getline(cin, tempWord)) {
+    string finalWord;
+    for (char c : tempWord) {
+      if(isalpha(c)) {
+        finalWord += c;
+      }
+    }
+    words.push_back(finalWord);
+  }
+  for(int i = 0; i < 2; i++) {
+    cout << words.at(i);
+  }
 }
 
 #pragma endregion CaesarDec
