@@ -173,17 +173,21 @@ void caesarDecryptCommand(const vector<string>& dict) {
   // TODO: student
   vector<string> words;
   string tempWord;
-  while(getline(cin, tempWord)) {
-    string finalWord;
-    for (char c : tempWord) {
-      if(isalpha(c)) {
-        finalWord += c;
-      }
+  cout << "Enter Text For Decryption: ";
+  getline(cin, tempWord);
+  string finalWord;
+  cout << "Temp: " << tempWord << endl;
+  for (char c : tempWord) {
+    if(isalpha(c)) {
+      finalWord += toupper(c);
+    } else if(isspace(c)) {
+      words.push_back(finalWord);
+      finalWord = "";
+      continue;
     }
-    words.push_back(finalWord);
   }
-  for(int i = 0; i < 2; i++) {
-    cout << words.at(i);
+  for(int i = 0; i < words.size(); i++) {
+    cout << words.at(i) << endl;
   }
 }
 
