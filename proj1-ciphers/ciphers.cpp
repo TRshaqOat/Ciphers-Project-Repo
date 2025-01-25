@@ -144,51 +144,101 @@ void caesarEncryptCommand() {
 
 #pragma region CaesarDec
 
+char rotateDecrypt(char c, int amount) {
+  // TODO: student
+  int index = ALPHABET.find(c);
+  index = (index + amount) % 26;
+  return ALPHABET.at(index);
+}
+
 void rot(vector<string>& strings, int amount) {
   // TODO: student
-
+  for(int i = 0; i < strings.size(); i++) {
+    string temp;
+    for (char c : strings.at(i)) {
+        temp += rotateDecrypt(c, amount);
+    }
+    strings.at(i) = temp;
+  }
 }
 
 string clean(const string& s) {
   // TODO: student
-  return "";
+  string rString;
+  bool checkChar = false;
+  for (char c : s) {
+    if(isalpha(c)) {
+      rString += toupper(c);
+      checkChar = true;
+    } else if(isspace(c) && checkChar && s[s.length() - 2] != c) {
+      rString += c;
+    }
+  }
+  return rString;
 }
 
 vector<string> splitBySpaces(const string& s) {
   // TODO: student
-  return vector<string>{};
+  vector<std::string> result;
+  stringstream ss(s);
+  string word;
+  while (ss >> word) {
+      result.push_back(word);
+  }
+  return result;
 }
 
 string joinWithSpaces(const vector<string>& words) {
   // TODO: student
-  return "";
+  string jointPhrase;
+  for(int i = 0; i < words.size(); i++) {
+    for (char c : words.at(i)) {
+      jointPhrase += c;
+    }
+    if(i != words.size() - 1) {
+      jointPhrase += ' ';
+    }
+  }
+  return jointPhrase;
 }
 
 int numWordsIn(const vector<string>& words, const vector<string>& dict) {
   // TODO: student
-  return 0;
+  int count = 0;
+  for(int i = 0; i < words.size(); i++) {
+    bool check = false;
+    for(int j = 0; j < dict.size(); j++) {
+      if(dict.at(j) == words.at(i)) {
+        count++;
+        break;
+      }
+    }
+  }
+  return count;
 }
 
 void caesarDecryptCommand(const vector<string>& dict) {
   // TODO: student
-  vector<string> words;
-  string tempWord;
+  string tempInput;
   cout << "Enter Text For Decryption: ";
-  getline(cin, tempWord);
-  string finalWord;
-  cout << "Temp: " << tempWord << endl;
-  for (char c : tempWord) {
-    if(isalpha(c)) {
-      finalWord += toupper(c);
-    } else if(isspace(c)) {
-      words.push_back(finalWord);
-      finalWord = "";
-      continue;
+  getline(cin, tempInput);
+  string cleanedInput = clean(tempInput);
+  vector<string> words = splitBySpaces(cleanedInput);
+  bool checkGood = false;
+  for(int i = 0; i <= 26; i++) {
+    vector<string> newWords = words;
+    rot(newWords, i);
+    if(numWordsIn(newWords, dict) > newWords.size() / 2) {
+      cout << joinWithSpaces(newWords) << endl;
+      checkGood = true;
     }
   }
-  for(int i = 0; i < words.size(); i++) {
-    cout << words.at(i) << endl;
+  if(!checkGood) {
+    cout << endl << "No good decryptions found" << endl;
   }
+  // for(int i = 0; i < words.size(); i++) {
+  //   cout << words.at(i) << endl;
+  // }
 }
 
 #pragma endregion CaesarDec
