@@ -236,9 +236,6 @@ void caesarDecryptCommand(const vector<string>& dict) {
   if(!checkGood) {
     cout << endl << "No good decryptions found" << endl;
   }
-  // for(int i = 0; i < words.size(); i++) {
-  //   cout << words.at(i) << endl;
-  // }
 }
 
 #pragma endregion CaesarDec
