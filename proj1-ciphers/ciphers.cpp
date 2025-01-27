@@ -242,21 +242,6 @@ void caesarDecryptCommand(const vector<string>& dict) {
 
 #pragma region SubstEnc
 
-string cleanSubstEncrypt(const string& s) {
-  // TODO: student
-  string rString;
-  bool checkChar = false;
-  for (char c : s) {
-    if(isalpha(c)) {
-      rString += toupper(c);
-      checkChar = true;
-    } else if(isspace(c) && checkChar && s[s.length() - 2] != c) {
-      rString += c;
-    }
-  }
-  return rString;
-}
-
 string applySubstCipher(const vector<char>& cipher, const string& s) {
   // TODO: student
   string encryptedString;
@@ -271,7 +256,7 @@ string applySubstCipher(const vector<char>& cipher, const string& s) {
         }
       }
       encryptedString += cipher.at(index);
-    } else if(isspace(c)) {
+    } else {
       encryptedString += c;
     }
   }
@@ -283,9 +268,8 @@ void applyRandSubstCipherCommand() {
   string tempInput;
   cout << "Enter Text For Encryption: ";
   getline(cin, tempInput);
-  string cleanedInput = cleanSubstEncrypt(tempInput);
   vector<char> cipher = genRandomSubstCipher(); 
-  cout << endl << "Encrypted text: " << applySubstCipher(cipher, cleanedInput) << endl;
+  cout << endl << "Encrypted text: " << applySubstCipher(cipher, tempInput) << endl;
 }
 
 #pragma endregion SubstEnc
