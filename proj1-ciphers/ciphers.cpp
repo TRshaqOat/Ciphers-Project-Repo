@@ -74,9 +74,9 @@ int main() {
     } else if (command == "D" || command == "d") {
       caesarDecryptCommand(dictionary);
     } else if (command == "E" || command == "e") {
-      
+
     } else if (command == "A" || command == "a") {
-      
+      applyRandSubstCipherCommand();
     } else if (command == "S" || command == "s") {
       
     } else if (command == "F" || command == "f") {
@@ -242,13 +242,50 @@ void caesarDecryptCommand(const vector<string>& dict) {
 
 #pragma region SubstEnc
 
+string cleanSubstEncrypt(const string& s) {
+  // TODO: student
+  string rString;
+  bool checkChar = false;
+  for (char c : s) {
+    if(isalpha(c)) {
+      rString += toupper(c);
+      checkChar = true;
+    } else if(isspace(c) && checkChar && s[s.length() - 2] != c) {
+      rString += c;
+    }
+  }
+  return rString;
+}
+
 string applySubstCipher(const vector<char>& cipher, const string& s) {
   // TODO: student
-  return "";
+  string encryptedString;
+  for (char c : s) {
+    if(isalpha(c)) {
+      char upper = toupper(c);
+      int index = 0;
+      for(int i = 0; i < ALPHABET.size(); i++) {
+        if(upper == ALPHABET.at(i)) {
+          index = i;
+          break;
+        }
+      }
+      encryptedString += cipher.at(index);
+    } else if(isspace(c)) {
+      encryptedString += c;
+    }
+  }
+  return encryptedString;
 }
 
 void applyRandSubstCipherCommand() {
   // TODO: student
+  string tempInput;
+  cout << "Enter Text For Encryption: ";
+  getline(cin, tempInput);
+  string cleanedInput = cleanSubstEncrypt(tempInput);
+  vector<char> cipher = genRandomSubstCipher(); 
+  cout << endl << "Encrypted text: " << applySubstCipher(cipher, cleanedInput) << endl;
 }
 
 #pragma endregion SubstEnc
