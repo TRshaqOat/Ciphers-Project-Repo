@@ -46,9 +46,29 @@ int main() {
       file.close();
       cout << "*dictionary read successfully*";
   } else {
-      cout << "Error opening file!" << endl;
+      cout << "Error opening dictionary file!" << endl;
       return 1;
   }
+
+
+  ifstream quadFile("english_quadgrams.txt");
+  vector<string> quadgrams;
+  string quadWord;
+
+  if (quadFile.is_open()) {
+      while (quadFile >> quadWord) {
+          quadgrams.push_back(quadWord);
+      }
+      quadFile.close();
+      cout << "*quadgrams read successfully*";
+  } else {
+      cout << "Error opening quadgram file!" << endl;
+      return 1;
+  }
+
+  QuadgramScorer scorer(inpQuadgrams, counts);
+
+
 
   cout << "Welcome to Ciphers!" << endl;
   cout << "-------------------" << endl;
@@ -276,17 +296,39 @@ void applyRandSubstCipherCommand() {
 
 #pragma region SubstDec
 
+string cleanScoreString(const string& s) {
+  // TODO: student
+  string rString;
+  bool checkChar = false;
+  for (char c : s) {
+    if(isalpha(c)) {
+      rString += toupper(c);
+      checkChar = true;
+    } else if(isspace(c) && checkChar && s[s.length() - 2] != c) {
+      rString += c;
+    }
+  }
+  return rString;
+}
+
 double scoreString(const QuadgramScorer& scorer, const string& s) {
   // TODO: student
-  return 0.0;
+  vector<string> quadVector;
+  string sending = cleanScoreString(s);
+  if(s.length() >= 4) {
+    for(int i = 0; i < sending.length() - 3; i++) {
+      quadVector.push_back(sending.substr(i, 4));
+    }
+  }
+  return scorer.getScore(quadVector);
 }
 
 void computeEnglishnessCommand(const QuadgramScorer& scorer) {
   // TODO: student
+    cout << endl << "Englishness of scorer: " << applySubstCipher(cipher, tempInput) << endl;
 }
 
-vector<char> decryptSubstCipher(const QuadgramScorer& scorer,
-                                const string& ciphertext) {
+vector<char> decryptSubstCipher(const QuadgramScorer& scorer, const string& ciphertext) {
   // TODO: student
   return vector<char>{};
 }
