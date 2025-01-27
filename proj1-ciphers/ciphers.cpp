@@ -53,11 +53,24 @@ int main() {
 
   ifstream quadFile("english_quadgrams.txt");
   vector<string> quadgrams;
-  string quadWord;
+  vector<int> counts;
+  string quadLine;
 
   if (quadFile.is_open()) {
-      while (quadFile >> quadWord) {
-          quadgrams.push_back(quadWord);
+      while (getline(quadFile, quadLine)) {
+          string quad;
+          string stringCount;
+          for(char c : quadLine) {
+            if(isalpha(c)) {
+              quad += c;
+            } else if(isdigit(c)){
+              stringCount += c;
+            } else {
+              continue;
+            }
+          }
+          quadgrams.push_back(quad);
+          counts.push_back(stoi(stringCount));
       }
       quadFile.close();
       cout << "*quadgrams read successfully*";
@@ -66,7 +79,7 @@ int main() {
       return 1;
   }
 
-  QuadgramScorer scorer(inpQuadgrams, counts);
+  QuadgramScorer scorer(quadgrams, counts);
 
 
 
@@ -94,7 +107,7 @@ int main() {
     } else if (command == "D" || command == "d") {
       caesarDecryptCommand(dictionary);
     } else if (command == "E" || command == "e") {
-
+      computeEnglishnessCommand(scorer);
     } else if (command == "A" || command == "a") {
       applyRandSubstCipherCommand();
     } else if (command == "S" || command == "s") {
@@ -299,12 +312,10 @@ void applyRandSubstCipherCommand() {
 string cleanScoreString(const string& s) {
   // TODO: student
   string rString;
-  bool checkChar = false;
   for (char c : s) {
     if(isalpha(c)) {
       rString += toupper(c);
-      checkChar = true;
-    } else if(isspace(c) && checkChar && s[s.length() - 2] != c) {
+    } else if(isspace(c)) {
       rString += c;
     }
   }
@@ -314,18 +325,22 @@ string cleanScoreString(const string& s) {
 double scoreString(const QuadgramScorer& scorer, const string& s) {
   // TODO: student
   vector<string> quadVector;
+  double totalScore = 0.0;
   string sending = cleanScoreString(s);
-  if(s.length() >= 4) {
+  if(sending.length() >= 4) {
     for(int i = 0; i < sending.length() - 3; i++) {
-      quadVector.push_back(sending.substr(i, 4));
+      totalScore += scorer.getScore(sending.substr(i, 4));
     }
   }
-  return scorer.getScore(quadVector);
+  return totalScore;
 }
 
 void computeEnglishnessCommand(const QuadgramScorer& scorer) {
   // TODO: student
-    cout << endl << "Englishness of scorer: " << applySubstCipher(cipher, tempInput) << endl;
+  string tempInput;
+  cout << "Enter Text to Check Englishness: ";
+  getline(cin, tempInput);
+  cout << endl << "Englishness of Text: " << scoreString(scorer, tempInput) << endl;
 }
 
 vector<char> decryptSubstCipher(const QuadgramScorer& scorer, const string& ciphertext) {
