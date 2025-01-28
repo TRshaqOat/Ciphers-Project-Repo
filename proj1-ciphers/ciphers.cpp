@@ -355,7 +355,7 @@ void decryptSubstCipherCommand(const QuadgramScorer& scorer) {
 }
 
 void decryptSubstFileCommand(const QuadgramScorer& scorer) {
-
+  // TODO: student
   cout << endl << "Decrypted Text: " << endl;
 }
 
