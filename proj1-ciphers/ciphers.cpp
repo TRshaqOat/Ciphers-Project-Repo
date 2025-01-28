@@ -111,9 +111,9 @@ int main() {
     } else if (command == "A" || command == "a") {
       applyRandSubstCipherCommand();
     } else if (command == "S" || command == "s") {
-      
+      decryptSubstCipherCommand(scorer);
     } else if (command == "F" || command == "f") {
-      
+      decryptSubstFileCommand(scorer);
     } 
     cout << endl;
 
@@ -315,8 +315,6 @@ string cleanScoreString(const string& s) {
   for (char c : s) {
     if(isalpha(c)) {
       rString += toupper(c);
-    } else if(isspace(c)) {
-      rString += c;
     }
   }
   return rString;
@@ -350,6 +348,15 @@ vector<char> decryptSubstCipher(const QuadgramScorer& scorer, const string& ciph
 
 void decryptSubstCipherCommand(const QuadgramScorer& scorer) {
   // TODO: student
+  string tempInput;
+  cout << "Enter Text to Decrpyt: ";
+  getline(cin, tempInput);
+  cout << endl << "Decrypted Text: " << endl;
+}
+
+void decryptSubstFileCommand(const QuadgramScorer& scorer) {
+  // TODO: student
+  cout << endl << "Decrypted Text: " << endl;
 }
 
 #pragma endregion SubstDec
