@@ -113,7 +113,7 @@ int main() {
     } else if (command == "S" || command == "s") {
       decryptSubstCipherCommand(scorer);
     } else if (command == "F" || command == "f") {
-      decryptSubstFileCommand(scorer);
+      //decryptSubstFileCommand(scorer);
     } 
     cout << endl;
 
@@ -341,9 +341,63 @@ void computeEnglishnessCommand(const QuadgramScorer& scorer) {
   cout << endl << "Englishness of Text: " << scoreString(scorer, tempInput) << endl;
 }
 
-vector<char> decryptSubstCipher(const QuadgramScorer& scorer, const string& ciphertext) {
+vector<char> swapLetters(const vector<char>& key) {
   // TODO: student
-  return vector<char>{};
+  vector<char> newKey = key;
+  int i = Random::randInt(25);
+  int j = Random::randInt(25);
+  while(i == j) {
+    j = Random::randInt(25);
+  }
+  swap(newKey[i], newKey[j]);
+  return newKey;
+}
+
+string decryptWithKey(const vector<char>& key, string& cipher) {
+  string decryptedText;
+  for(char c : cipher) {
+    if(isalpha(c)) {
+      int i = 0;
+      while(key[i] != toupper(c)) {
+        i++;
+      }
+      decryptedText += ALPHABET[i];
+    } else {
+      decryptedText += c;
+    }
+  }
+  return decryptedText;
+}
+
+vector<char> decryptSubstCipher(const QuadgramScorer& scorer, string cipherText) {
+  // TODO: student
+  vector<char> bestKey;
+  double bestScore = 0.0;
+  for(int i = 0; i < 25; i++) {
+    vector<char> currentKey = genRandomSubstCipher();
+    string decryptedText = decryptWithKey(currentKey, cipherText);
+    double currentScore = scoreString(scorer, decryptedText);
+
+    int trialWithoutImprov = 0;
+    while(trialWithoutImprov == 1000) {
+      vector<char> newKey = swapLetters(currentKey);
+      string newDecryptedText = decryptWithKey(newKey, cipherText);
+      double newScore = scoreString(scorer, newDecryptedText);
+      if(newScore > currentScore) {
+        currentScore = newScore;
+        currentKey = newKey;
+        trialWithoutImprov = 0;
+      } else {
+        trialWithoutImprov++;
+      }
+    }
+
+    if(currentScore > bestScore) {
+      bestScore = currentScore;
+      bestKey = currentKey;
+    }
+  }
+  return bestKey;
 }
 
 void decryptSubstCipherCommand(const QuadgramScorer& scorer) {
@@ -351,7 +405,9 @@ void decryptSubstCipherCommand(const QuadgramScorer& scorer) {
   string tempInput;
   cout << "Enter Text to Decrpyt: ";
   getline(cin, tempInput);
-  cout << endl << "Decrypted Text: " << endl;
+  vector<char> decryptedVector = decryptSubstCipher(scorer, tempInput);
+  string decryptedText(decryptedVector.begin(), decryptedVector.end());
+  cout << endl << "Decrypted Text: " << decryptedText << endl;
 }
 
 void decryptSubstFileCommand(const QuadgramScorer& scorer) {
