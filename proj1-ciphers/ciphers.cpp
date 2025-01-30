@@ -44,7 +44,7 @@ int main() {
           dictionary.push_back(wordRead);
       }
       file.close();
-      cout << "*dictionary read successfully*";
+      cout << "*dictionary read successfully*" << endl;
   } else {
       cout << "Error opening dictionary file!" << endl;
       return 1;
@@ -73,7 +73,7 @@ int main() {
           counts.push_back(stoi(stringCount));
       }
       quadFile.close();
-      cout << "*quadgrams read successfully*";
+      cout << "*quadgrams read successfully*" << endl;
   } else {
       cout << "Error opening quadgram file!" << endl;
       return 1;
@@ -83,7 +83,7 @@ int main() {
 
 
 
-  cout << "Welcome to Ciphers!" << endl;
+  cout << endl << "Welcome to Ciphers!" << endl;
   cout << "-------------------" << endl;
   cout << endl;
 
@@ -111,7 +111,8 @@ int main() {
     } else if (command == "A" || command == "a") {
       applyRandSubstCipherCommand();
     } else if (command == "S" || command == "s") {
-      decryptSubstCipherCommand(scorer);
+      //decryptSubstCipherCommand(scorer);
+      decryptSubstFileCommand(scorer);
     } else if (command == "F" || command == "f") {
       //decryptSubstFileCommand(scorer);
     } 
@@ -345,15 +346,15 @@ vector<char> swapLetters(const vector<char>& key) {
   // TODO: student
   vector<char> newKey = key;
   int i = Random::randInt(25);
-  int j = Random::randInt(25);
-  while(i == j) {
+  int j;
+  do {
     j = Random::randInt(25);
-  }
+  } while(i == j);
   swap(newKey[i], newKey[j]);
   return newKey;
 }
 
-string decryptWithKey(const vector<char>& key, string& cipher) {
+string decryptWithKey(const vector<char>& key, const string& cipher) {
   string decryptedText;
   for(char c : cipher) {
     if(isalpha(c)) {
@@ -371,15 +372,18 @@ string decryptWithKey(const vector<char>& key, string& cipher) {
 
 vector<char> decryptSubstCipher(const QuadgramScorer& scorer, string cipherText) {
   // TODO: student
-  vector<char> bestKey;
+  vector<char> bestKey = genRandomSubstCipher();
   double bestScore = 0.0;
   for(int i = 0; i < 25; i++) {
     vector<char> currentKey = genRandomSubstCipher();
     string decryptedText = decryptWithKey(currentKey, cipherText);
     double currentScore = scoreString(scorer, decryptedText);
-
+    for (char c : currentKey) {
+        std::cout << c;
+    }
+    cout << " : " << currentScore << " : " << decryptedText << endl;
     int trialWithoutImprov = 0;
-    while(trialWithoutImprov == 1000) {
+    while(trialWithoutImprov < 1000) {
       vector<char> newKey = swapLetters(currentKey);
       string newDecryptedText = decryptWithKey(newKey, cipherText);
       double newScore = scoreString(scorer, newDecryptedText);
@@ -405,13 +409,29 @@ void decryptSubstCipherCommand(const QuadgramScorer& scorer) {
   string tempInput;
   cout << "Enter Text to Decrpyt: ";
   getline(cin, tempInput);
-  vector<char> decryptedVector = decryptSubstCipher(scorer, tempInput);
-  string decryptedText(decryptedVector.begin(), decryptedVector.end());
+
+  vector<char> decryptKey = decryptSubstCipher(scorer, tempInput);
+  cout << "Best Key: ";
+    for (char c : decryptKey) {
+        cout << c;
+    }
+  cout << endl;
+  string decryptedText = decryptWithKey(decryptKey, tempInput);
+
   cout << endl << "Decrypted Text: " << decryptedText << endl;
 }
 
 void decryptSubstFileCommand(const QuadgramScorer& scorer) {
   // TODO: student
+  string test = "HELLO";
+  vector<char> random = genRandomSubstCipher();
+  string encrypted = applySubstCipher(random, test);
+  vector<char> decryptKey = decryptSubstCipher(scorer, encrypted);
+  string decrypted = decryptWithKey(decryptKey, encrypted);
+  cout << "Original: " << test << endl;
+  cout << "Encrypted: " << encrypted << endl;
+  cout << "Decrypted: " << decrypted << endl;
+
   cout << endl << "Decrypted Text: " << endl;
 }
 
