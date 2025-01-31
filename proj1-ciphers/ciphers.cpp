@@ -31,6 +31,8 @@ const string ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
  */
 void printMenu();
 
+void decryptSubstFileCommand(const QuadgramScorer& scorer);
+
 int main() {
   Random::seed(time(NULL));
   string command;
@@ -239,7 +241,6 @@ int numWordsIn(const vector<string>& words, const vector<string>& dict) {
   // TODO: student
   int count = 0;
   for(int i = 0; i < words.size(); i++) {
-    bool check = false;
     for(int j = 0; j < dict.size(); j++) {
       if(dict.at(j) == words.at(i)) {
         count++;
