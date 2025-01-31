@@ -111,10 +111,9 @@ int main() {
     } else if (command == "A" || command == "a") {
       applyRandSubstCipherCommand();
     } else if (command == "S" || command == "s") {
-      //decryptSubstCipherCommand(scorer);
-      decryptSubstFileCommand(scorer);
+      decryptSubstCipherCommand(scorer);
     } else if (command == "F" || command == "f") {
-      //decryptSubstFileCommand(scorer);
+      decryptSubstFileCommand(scorer);
     } 
     cout << endl;
 
@@ -342,67 +341,59 @@ void computeEnglishnessCommand(const QuadgramScorer& scorer) {
   cout << endl << "Englishness of Text: " << scoreString(scorer, tempInput) << endl;
 }
 
-vector<char> swapLetters(const vector<char>& key) {
-  // TODO: student
-  vector<char> newKey = key;
-  int i = Random::randInt(25);
-  int j;
-  do {
-    j = Random::randInt(25);
-  } while(i == j);
-  swap(newKey[i], newKey[j]);
-  return newKey;
+// Helper function to swap two characters in a vector of cipher keys
+void swapLetters(vector<char>& cipher) {
+    int i1 = Random::randInt(25);
+    int i2 = Random::randInt(25);
+    while (i1 == i2) {
+        i2 = Random::randInt(25); // Ensure the indices are different
+    }
+    swap(cipher[i1], cipher[i2]);
 }
 
-string decryptWithKey(const vector<char>& key, const string& cipher) {
-  string decryptedText;
-  for(char c : cipher) {
-    if(isalpha(c)) {
-      int i = 0;
-      while(key[i] != toupper(c)) {
-        i++;
-      }
-      decryptedText += ALPHABET[i];
-    } else {
-      decryptedText += c;
+// Helper function to perform a single hill-climbing run
+vector<char> hillClimbOnce(const QuadgramScorer& scorer, const string& ciphertext) {
+    vector<char> bestCipher = genRandomSubstCipher(); // Initial random key
+    double bestScore = scoreString(scorer, applySubstCipher(bestCipher, ciphertext));
+    
+    int noImprovementCount = 0;
+    
+    while (noImprovementCount < 1000) {
+        vector<char> newCipher = bestCipher;
+        swapLetters(newCipher);  // Swap two letters to create a new candidate key
+        
+        double newScore = scoreString(scorer, applySubstCipher(newCipher, ciphertext));
+        
+        if (newScore > bestScore) {
+            bestCipher = newCipher;  // Accept the new cipher if it improves the score
+            bestScore = newScore;
+            noImprovementCount = 0;  // Reset count as we found an improvement
+        } else {
+            noImprovementCount++;  // No improvement
+        }
     }
-  }
-  return decryptedText;
+    
+    return bestCipher;
 }
 
-vector<char> decryptSubstCipher(const QuadgramScorer& scorer, string cipherText) {
-  // TODO: student
-  vector<char> bestKey = genRandomSubstCipher();
-  double bestScore = 0.0;
-  for(int i = 0; i < 25; i++) {
-    vector<char> currentKey = genRandomSubstCipher();
-    string decryptedText = decryptWithKey(currentKey, cipherText);
-    double currentScore = scoreString(scorer, decryptedText);
-    for (char c : currentKey) {
-        std::cout << c;
+// Helper function to run the hill-climbing algorithm multiple times and select the best result
+vector<char> hillClimbMultiple(const QuadgramScorer& scorer, const string& ciphertext) {
+    vector<char> bestCipher;
+    double bestScore = -INFINITY;
+    
+    for (int i = 0; i < 25; i++) {
+        vector<char> cipher = hillClimbOnce(scorer, ciphertext);
+        double score = scoreString(scorer, applySubstCipher(cipher, ciphertext));
+        
+        if (score > bestScore) {
+            bestCipher = cipher;
+            bestScore = score;
+        }
     }
-    cout << " : " << currentScore << " : " << decryptedText << endl;
-    int trialWithoutImprov = 0;
-    while(trialWithoutImprov < 1000) {
-      vector<char> newKey = swapLetters(currentKey);
-      string newDecryptedText = decryptWithKey(newKey, cipherText);
-      double newScore = scoreString(scorer, newDecryptedText);
-      if(newScore > currentScore) {
-        currentScore = newScore;
-        currentKey = newKey;
-        trialWithoutImprov = 0;
-      } else {
-        trialWithoutImprov++;
-      }
-    }
-
-    if(currentScore > bestScore) {
-      bestScore = currentScore;
-      bestKey = currentKey;
-    }
-  }
-  return bestKey;
+    
+    return bestCipher;
 }
+
 
 void decryptSubstCipherCommand(const QuadgramScorer& scorer) {
   // TODO: student
@@ -410,29 +401,35 @@ void decryptSubstCipherCommand(const QuadgramScorer& scorer) {
   cout << "Enter Text to Decrpyt: ";
   getline(cin, tempInput);
 
-  vector<char> decryptKey = decryptSubstCipher(scorer, tempInput);
-  cout << "Best Key: ";
-    for (char c : decryptKey) {
-        cout << c;
-    }
-  cout << endl;
-  string decryptedText = decryptWithKey(decryptKey, tempInput);
+  vector<char> bestCipher = hillClimbMultiple(scorer, tempInput);
+  string decryptedText = applySubstCipher(bestCipher, tempInput);
 
   cout << endl << "Decrypted Text: " << decryptedText << endl;
 }
 
 void decryptSubstFileCommand(const QuadgramScorer& scorer) {
   // TODO: student
-  string test = "HELLO";
-  vector<char> random = genRandomSubstCipher();
-  string encrypted = applySubstCipher(random, test);
-  vector<char> decryptKey = decryptSubstCipher(scorer, encrypted);
-  string decrypted = decryptWithKey(decryptKey, encrypted);
-  cout << "Original: " << test << endl;
-  cout << "Encrypted: " << encrypted << endl;
-  cout << "Decrypted: " << decrypted << endl;
+  string fileInput, fileOutput;
+  cout << "Enter Input File to Decrpyt: ";
+  getline(cin, fileInput);
+  cout << "Enter Output File: ";
+  getline(cin, fileOutput);
 
-  cout << endl << "Decrypted Text: " << endl;
+  ifstream file(fileInput);
+  string line;
+  string finalText;
+  while (getline(file, line)) {
+    finalText += line + "\n";
+  }
+  file.close();
+  cout << "*Input file read successfully*" << endl;
+
+  vector<char> bestCipher = hillClimbMultiple(scorer, finalText);
+  string decryptedText = applySubstCipher(bestCipher, finalText);
+
+  ofstream outputFile(fileOutput);
+  outputFile << decryptedText;
+  outputFile.close();
 }
 
 #pragma endregion SubstDec
